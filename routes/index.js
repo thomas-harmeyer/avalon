@@ -6,10 +6,9 @@ var assert = require("assert");
 var mongodb = require("mongodb");
 var MongoClient = mongodb.MongoClient;
 
-router.get("/", function (req, res) {
+router.get("/", function (req, res, next) {
   res.cookie("code", "baa");
   let code = "baa";
-  console.log("type is::::::::", code);
   if (!req.cookies) {
     res.cookie("test", Date.now());
   }
@@ -32,8 +31,7 @@ router.post("/create_code", function (req, res) {
     assert.equal(null, err);
     console.log("Connected successfully to server");
     const db = client.db(dbName);
-    db.collection("games").insertOne(
-      {
+    db.collection("games").insertOne({
         code: code,
         updated: Date.now(),
       },
@@ -57,11 +55,9 @@ router.post("/", function (req, res) {
     assert.equal(null, err);
     console.log("Connected successfully to server");
     const db = client.db(dbName);
-    db.collection("games").updateOne(
-      {
+    db.collection("games").updateOne({
         code: code,
-      },
-      {
+      }, {
         $push: {
           users: username,
         },
@@ -101,8 +97,7 @@ router.get("/games", function (req, res) {
 
     const db = client.db(dbName);
 
-    db.collection("games").findOne(
-      {
+    db.collection("games").findOne({
         code: code,
       },
       function (err, result) {
