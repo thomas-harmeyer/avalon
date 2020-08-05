@@ -1,7 +1,18 @@
 extends layout
 
 block content
-    h1= games.code
-    ul
+  .container-fluid
+    .row.col.justify-content-center
+        h1 Lobby: #{games.code}
+    .row.justify-content-center.form-group
         for user in games.users
-            li= user
+            .d-flex.justify-content-center
+                form(method="post", action="/remove_user")
+                    .col.btn-group
+                        a.btn.btn-primary #{user}
+                        input(name="toDelete", value=user, hidden)
+                        button.btn.btn-danger(type="submit") X
+    .row.justify-content-center
+        .form-group
+        form(method="post", action="/remove_user")
+            button.btn.btn-primary(type="submit") Start Game

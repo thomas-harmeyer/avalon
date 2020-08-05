@@ -9,8 +9,6 @@ var usersRouter = require("./routes/users");
 
 var timer = require("./controllers/node_regular_job");
 
-var mongoController = require("./controllers/mongo-controller");
-
 var app = express();
 
 // view engine setup

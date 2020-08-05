@@ -3,14 +3,16 @@ var router = express.Router();
 
 var assert = require("assert");
 
+var mongoController = require("../controllers/mongo-controller");
+var timeController = require("../controllers/time-controller");
 var mongodb = require("mongodb");
 var MongoClient = mongodb.MongoClient;
 
 router.get("/", function (req, res, next) {
-  res.cookie("code", "baa");
-  let code = "baa";
-  if (!req.cookies) {
-    res.cookie("test", Date.now());
+  let code = "";;
+  console.log(req.query);
+  if (req.query.code) {
+    code = req.query.code;
   }
   res.render("landing", {
     title: "Avalon",
@@ -19,12 +21,12 @@ router.get("/", function (req, res, next) {
 });
 
 router.post("/create_code", function (req, res) {
-  console.log(Math.random());
+  console.log("username", req.body.username);
   let code =
-    Math.round(Math.random() * 10).toString() +
-    Math.round(Math.random() * 10).toString() +
-    Math.round(Math.random() * 10).toString() +
-    Math.round(Math.random() * 10).toString();
+    Math.floor(Math.random() * Math.floor(10)).toString() +
+    Math.floor(Math.random() * Math.floor(10)).toString() +
+    Math.floor(Math.random() * Math.floor(10)).toString() +
+    Math.floor(Math.random() * Math.floor(10)).toString();
   const url = "mongodb://localhost:27017";
   const dbName = "avalon";
   MongoClient.connect(url, function (err, client) {
@@ -36,9 +38,7 @@ router.post("/create_code", function (req, res) {
         updated: Date.now(),
       },
       function (err, result) {
-        console.log("insert result:", result);
-        res.cookie("code", code);
-        res.redirect("/");
+        res.redirect("/?code=" + code);
       }
     );
     client.close();
@@ -58,13 +58,15 @@ router.post("/", function (req, res) {
     db.collection("games").updateOne({
         code: code,
       }, {
-        $push: {
+        $addToSet: {
           users: username,
         },
+      }, {
+        upsert: true
       },
       function (err, result) {
         if (err) {
-          console.log(err);
+          console.log("error", err);
           res.render("landing", {
             err: err,
           });
@@ -74,7 +76,13 @@ router.post("/", function (req, res) {
             title: "Avalon",
           });
         } else {
-          res.redirect("/games?username=" + username + "&code=" + code);
+          res.cookie("username", username, {
+            maxAge: timeController.hour(24)
+          });
+          res.cookie("code", code, {
+            maxAge: timeController.hour(24)
+          });
+          res.redirect("/games");
         }
       }
     );
@@ -83,9 +91,8 @@ router.post("/", function (req, res) {
 });
 
 router.get("/games", function (req, res) {
-  let query = req.query;
-  let username = query["username"];
-  let code = query["code"];
+  let username = req.cookies.username;
+  let code = req.cookies.code;
   // Connection URL
   const url = "mongodb://localhost:27017";
   // Database Name
@@ -102,7 +109,7 @@ router.get("/games", function (req, res) {
       },
       function (err, result) {
         assert.equal(null, err);
-        console.log(result);
+        console.log("Found 1 result:", result);
         res.render("games", {
           games: result,
         });
@@ -111,6 +118,21 @@ router.get("/games", function (req, res) {
 
     client.close();
   });
+});
+router.post("/remove_user", function (req, res) {
+  let toDelete = req.body.toDelete;
+  console.log("toDelete", toDelete);
+  mongoController.connectToDb(function (db) {
+    let users = db.collection("games");
+    users.update({
+      "code": req.cookies.code
+    }, {
+      $pull: {
+        users: toDelete
+      }
+    });
+  });
+  res.redirect("/games");
 });
 
 module.exports = router;
