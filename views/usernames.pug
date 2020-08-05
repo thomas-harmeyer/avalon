@@ -1,0 +1,7 @@
+extends layout
+
+block content
+  ul
+  each username in usernames
+    li #{username.username} #{username.role}
+  

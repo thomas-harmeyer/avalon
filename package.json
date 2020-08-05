@@ -1,0 +1,21 @@
+{
+  "name": "avalon",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.5",
+    "debug": "~2.6.9",
+    "express": "^4.17.1",
+    "http-errors": "~1.6.3",
+    "mongo": "^0.1.0",
+    "mongodb": "^3.6.0",
+    "morgan": "~1.9.1",
+    "nodemon": "^2.0.4",
+    "pug": "2.0.0-beta11",
+    "url": "^0.11.0",
+    "url-parse": "^1.4.7"
+  }
+}

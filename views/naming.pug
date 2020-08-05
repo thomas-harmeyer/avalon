@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  form(action="/", method="post")
+    input(name="room_code",type="text", placeholder="room code")
+    br
+    input(name="username",type="text", placeholder="username")
+    br
+    button(type="submit") Submit

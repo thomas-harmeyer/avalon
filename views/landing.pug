@@ -1,0 +1,23 @@
+extends layout
+
+block content
+  .container
+    .d-flex.justify-content-center
+        h1 #{title}
+    .d-flex.justify-content-center
+        p Welcome to the game of #{title}
+    form(name="add_user", method="post", action="/")
+      .d-flex.justify-content-center
+        .form-group
+          input(name="username", type="text", placeholder="Username")
+      .d-flex.justify-content-center
+        .form-group
+          if typeof(code) !== 'undefined'
+            input(name="code", type="text", placeholder="Join", value= code)
+          else
+            input(name="code", type="text", placeholder="Join")
+          button(name="join", type="submit", class="btn btn-primary") Join
+    form(name="host_user", method="post", action="/create_code")
+      .d-flex.justify-content-center
+        .form-group
+          button(name="host", type="submit", class="btn btn-primary") Create Room
