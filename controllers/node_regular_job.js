@@ -10,7 +10,7 @@ setInterval(function () {
         let collection = db.collection("games");
         collection.remove({
             "updated": {
-                $lte: Date.now() - (cutOffMinutes)
+                $lte: Date.now() - (cutOffInterval)
             }
         });
     })

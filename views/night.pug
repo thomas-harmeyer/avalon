@@ -1,0 +1,9 @@
+extends layout
+
+block content
+    .container-fluid
+        h2 Your role is #{role}
+        if role.users
+            h4 the other players you know are:
+            for user in users
+                h4 #{user.name} is #{user.role}

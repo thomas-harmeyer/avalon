@@ -1,6 +1,8 @@
 extends layout
 
 block content
+  if typeof(err) !== 'undefined'
+    p= err
   .container.container-small
     .d-flex.justify-content-center
         h1 #{title}
@@ -9,15 +11,18 @@ block content
     form(name="add_user", method="post", action="/")
       .d-flex.justify-content-center
         .form-group
-          input(name="username", type="text", placeholder="Username")
+          input.form-control(id="username",name="username", type="text", placeholder="Username")
       .d-flex.justify-content-center
         .form-group
-          if typeof(code) !== 'undefined'
-            input(name="code", type="text", placeholder="Join", value= code)
-          else
-            input(name="code", type="text", placeholder="Join")
-          button(name="join", type="submit", class="btn btn-primary") Join
+          .input-group
+            if typeof(code) !== 'undefined'
+              input.form-control(name="code", type="number", placeholder="ope", value= code)
+            else
+              input.form-control(name="code", type="number", placeholder="Enter code or press 'Create Room'")
+            .input-group-append
+              button.btn.btn-primary(name="join", type="submit") Join
     form(name="host_user", method="post", action="/create_code")
+      input(id="create", name="username_copy", value="Yeet", hidden)
       .d-flex.justify-content-center
         .form-group
-          button(name="host", type="submit", class="btn btn-primary") Create Room
+          button.btn.btn-primary(name="host", type="submit", onclick="$('#create').val($('#username').val())") Create Room
