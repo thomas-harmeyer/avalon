@@ -46,7 +46,9 @@ function joinLobby(req, res) {
                 code: code,
             }, {
                 $addToSet: {
-                    users: username,
+                    users: {
+                        "username": username,
+                    }
                 },
             },
             function (err, result) {

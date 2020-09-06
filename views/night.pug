@@ -2,8 +2,7 @@ extends layout
 
 block content
     .container-fluid
-        h2 Your role is #{role}
-        if role.users
-            h4 the other players you know are:
+        h2 Your role is #{role.role}
+        h4 the other players you know are:
             for user in users
-                h4 #{user.name} is #{user.role}
+                h4 #{user.username} is #{user.role}

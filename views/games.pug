@@ -9,12 +9,12 @@ block content
             .d-flex.justify-content-center
                 form(method="post", action="/remove_user")
                     .col.btn-group
-                        a.btn.btn-primary #{user}
+                        a.btn.btn-primary #{user.username}
                         input(name="toDelete", value=user, hidden)
                         button.btn.btn-danger(type="submit") X
     .row.justify-content-center
         .form-group
-        form(method="post", action="/remove_user")
+        form(method="post", action="/night")
             button.btn.btn-primary(type="submit") Start Game
 
     script.
