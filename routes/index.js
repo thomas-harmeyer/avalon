@@ -17,8 +17,8 @@ router.get("/night", nightController.loadNight);
 router.post("/night", nightController.assignRoles);
 router.post("/createMission", missionController.createMission);
 router.get("/main", missionController.main);
-router.get("/main/new_mission",missionController.getCurrentMission)
+router.get("/main/new_mission", missionController.getCurrentMission)
 router.post("/main/new_mission", missionController.createMission)
-router.post("/vote",missionController.vote)
+router.post("/vote", missionController.vote)
 
 module.exports = router;

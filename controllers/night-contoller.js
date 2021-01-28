@@ -1,31 +1,31 @@
 var timeController = require("../controllers/time-controller");
 var assert = require("assert");
 var mongoController = require("../controllers/mongo-controller");
+
 function hasStarted(req, res) {
   let code = req.cookies.code;
   mongoController.connectToDb(function (db) {
-    db.collection("games").findOne(
-      {
+    db.collection("games").findOne({
         code: code,
       },
       function (err, result) {
         res.send(result.started == 'true');
-          
-        
+
+
       });
   });
 }
+
 function assignRoles(req, res) {
   let code = req.cookies.code;
   let username = req.cookies.username;
   var users;
   mongoController.connectToDb(function (db) {
-    db.collection("games").findOne(
-      {
+    db.collection("games").findOne({
         code: code,
       },
       function (err, result) {
-        if (result.started=='true') {
+        if (result.started == 'true') {
           loadNight(req, res);
           return;
         }
@@ -69,19 +69,21 @@ function loadNight(req, res) {
   let username = req.cookies.username;
   mongoController.connectToDb((db) => {
     let collection = db.collection("games");
-    collection.findOne(
-      {
+    collection.findOne({
         code: code,
-        
+
       },
       (err, result) => {
         console.log(result);
         let users = result.users;
-        let role = { username: "", role: "" };
+        let role = {
+          username: "",
+          role: ""
+        };
         let know = [];
         console.log(users);
         users.forEach((value, key) => {
-          if (value.username == username){
+          if (value.username == username) {
             role.username = value.username;
             role.role = value.role;
           }
@@ -91,11 +93,9 @@ function loadNight(req, res) {
             users.forEach((value, key) => {
               if (value.role == "Assassin") {
                 know.push(value);
-              }
-              else if (value.role == "Morgana") {
+              } else if (value.role == "Morgana") {
                 know.push(value);
-              }
-              else if (value.role == "Bad Knight") {
+              } else if (value.role == "Bad Knight") {
                 know.push(value);
               }
             });
@@ -111,21 +111,19 @@ function loadNight(req, res) {
           case "Good Knight":
             break;
           case "Assassin":
-           users.forEach((value, key) => {
+            users.forEach((value, key) => {
               if (value.role == "Morgana") {
                 know.push(value);
-              }
-              else if (value.role == "Bad Knight") {
+              } else if (value.role == "Bad Knight") {
                 know.push(value);
               }
             });
             break;
           case "Morgana":
-           users.forEach((value, key) => {
+            users.forEach((value, key) => {
               if (value.role == "Assassin") {
                 know.push(value);
-              }
-              else if (value.role == "Bad Knight") {
+              } else if (value.role == "Bad Knight") {
                 know.push(value);
               }
             });
@@ -134,13 +132,11 @@ function loadNight(req, res) {
             users.forEach((value, key) => {
               if (value.role == "Assassin") {
                 know.push(value);
-              }
-              else if (value.role == "Morgana") {
+              } else if (value.role == "Morgana") {
                 know.push(value);
-              }
-              else if (value.role == "Bad Knight") {
-                if(value.username != username)
-                know.push(value);
+              } else if (value.role == "Bad Knight") {
+                if (value.username != username)
+                  know.push(value);
               }
             });
             break;
@@ -164,8 +160,8 @@ function getRoles(numberOfPlayers) {
       roles.push("Bad Knight");
     }
   }
-    
-    
+
+
   for (let i = 0; i < numberOfPlayers; i++) {
     let x = getRandomInt(numberOfPlayers);
     let y = getRandomInt(numberOfPlayers);

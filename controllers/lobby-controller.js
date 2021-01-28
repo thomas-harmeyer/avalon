@@ -25,8 +25,7 @@ function createLobby(req, res) {
     Math.floor(Math.random() * Math.floor(10)).toString() +
     Math.floor(Math.random() * Math.floor(10)).toString();
   mongoController.connectToDb(function (db) {
-    db.collection("games").insertOne(
-      {
+    db.collection("games").insertOne({
         code: code,
         updated: Date.now(),
         started: "false"
@@ -46,11 +45,9 @@ function joinLobby(req, res) {
   console.log("username", username);
   console.log("code", code);
   mongoController.connectToDb(function (db) {
-    db.collection("games").updateOne(
-      {
+    db.collection("games").updateOne({
         code: code,
-      },
-      {
+      }, {
         $addToSet: {
           users: {
             username: username,
@@ -87,19 +84,17 @@ function removeUser(req, res) {
   console.log("toDelete", toDelete);
   mongoController.connectToDb(function (db) {
     let users = db.collection("games");
-    users.update(
-      {
-        code: req.cookies.code,
-      },
-      {
-        $pull: {
-          users: {username : toDelete},
+    users.update({
+      code: req.cookies.code,
+    }, {
+      $pull: {
+        users: {
+          username: toDelete
         },
       },
-      {
-        multi:true
-      }
-    );
+    }, {
+      multi: true
+    });
   });
   res.redirect("/games");
 }
