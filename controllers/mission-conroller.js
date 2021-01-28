@@ -31,7 +31,7 @@ function createMission(req, res) {
         } else {
             main(req, res);
         }
-    });
+    }, code);
 
 }
 
@@ -43,7 +43,7 @@ function missionIsActive(callback, code) {
                 active: "true"
             },
             function (err, obj) {
-                callback(obj != null);
+                callback(obj != null, obj);
             });
 
     });
@@ -51,17 +51,26 @@ function missionIsActive(callback, code) {
 
 function main(req, res) {
     let code = req.cookies.code;
-    missionIsActive(function (activeMission) {
+    let username = req.cookies.username;
+    missionIsActive(function (activeMission, missions) {
         console.log(activeMission);
+        console.log(missions);
         mongoController.connectToDb(function (db) {
             db.collection("games").findOne({
                     code: code,
                 },
                 function (err, result) {
                     if (activeMission) {
-                        res.render("main", {
-                            showMission: false
-                        })
+                        if (missions.suggestedUsers && missions.suggestedUsers.includes(username)) {
+                            res.render("main", {
+                                showOnMission: true,
+                                users: result.users
+                            })
+                        } else {
+                            res.render("main", {
+                                showWait: true
+                            })
+                        }
                     } else {
                         res.render("main", {
                             showMission: true,

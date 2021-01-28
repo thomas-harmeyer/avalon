@@ -15,6 +15,10 @@ block content
                                 a.btn.btn-secondary #{user.username}
             .d-flex.justify-content-center.row
                 a#submit.btn.btn-warning send mission
+        else if showWait
+            .d-flex.justify-content-center
+                h1 Sit tight, there is a mission going on right now
+        else if showOnMission
             #missionForm.d-flex.justify-content-center
                 .row.justify-content-center
                     .col.form-group
@@ -23,9 +27,6 @@ block content
                             .col.form-group
                         form(method="post" action="/vote")
                             button.btn.btn-danger.vote(type="submit" name="voteFail") Fail
-        else
-            .d-flex.justify-content-center
-                h1 Sit tight, there is a mission going on right now
 
 
     script(type="text/javascript").
@@ -62,24 +63,22 @@ block content
             });
         });
     script(type="text/javascript").
-        window.onload=()=>{
-            $(".vote").hide();
-            function isOnMission() {
-                $.ajax({
-                    method: "GET",
-                    url: "/main/new_mission",
-                    success: function (result) 
-                    {
-                        if(result==true){
-                            $(".vote").show();
-                        }else{
-                            $(".vote").hide();
-                        }
-                        window.setTimeout(()=>location.reload(),3000);
-                        console.log(result);
+        $(".vote").hide();
+        function isOnMission() {
+            $.ajax({
+                method: "GET",
+                url: "/main/new_mission",
+                success: function (result) 
+                {
+                    if(result==true){
+                        $(".vote").show();
+                    }else{
+                        $(".vote").hide();
                     }
-                });
-            }
+                    window.setTimeout(()=>location.reload(),3000);
+                    console.log(result);
+                }
+            });
+        }
         isOnMission();
-        };
         //setInterval(isOnMission, 3000);
