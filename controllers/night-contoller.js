@@ -90,15 +90,12 @@ function loadNight(req, res) {
           case "Merlin":
             users.forEach((value, key) => {
               if (value.role == "Assassin") {
-                value.role = "Assassin";
                 know.push(value);
               }
               else if (value.role == "Morgana") {
-                value.role = "Morgana";
                 know.push(value);
               }
               else if (value.role == "Bad Knight") {
-                value.role = "Bad Knight";
                 know.push(value);
               }
             });
@@ -116,11 +113,9 @@ function loadNight(req, res) {
           case "Assassin":
            users.forEach((value, key) => {
               if (value.role == "Morgana") {
-                value.role = "Morgana";
                 know.push(value);
               }
               else if (value.role == "Bad Knight") {
-                value.role = "Bad Knight";
                 know.push(value);
               }
             });
@@ -128,11 +123,9 @@ function loadNight(req, res) {
           case "Morgana":
            users.forEach((value, key) => {
               if (value.role == "Assassin") {
-                value.role = "Assassin";
                 know.push(value);
               }
               else if (value.role == "Bad Knight") {
-                value.role = "Bad Knight";
                 know.push(value);
               }
             });
@@ -140,11 +133,13 @@ function loadNight(req, res) {
           case "Bad Knight":
             users.forEach((value, key) => {
               if (value.role == "Assassin") {
-                value.role = "Assassin";
                 know.push(value);
               }
               else if (value.role == "Morgana") {
-                value.role = "Morgana";
+                know.push(value);
+              }
+              else if (value.role == "Bad Knight") {
+                if(value.username != username)
                 know.push(value);
               }
             });
@@ -163,14 +158,14 @@ function loadNight(req, res) {
 
 function getRoles(numberOfPlayers) {
   let roles = ["Merlin", "Assassin", "Percival", "Morgana", "Good Knight"];
-  for (let i = roles.length - 1; i < numberOfPlayers;) {
+  while (roles.length < numberOfPlayers) {
     roles.push("Good Knight");
-    i++;
-    if ( !(i < numberOfPlayers))
-      break;
-    roles.push("Bad Knight");
-    i++;
+    if (roles.length < numberOfPlayers) {
+      roles.push("Bad Knight");
+    }
   }
+    
+    
   for (let i = 0; i < numberOfPlayers; i++) {
     let x = getRandomInt(numberOfPlayers);
     let y = getRandomInt(numberOfPlayers);
