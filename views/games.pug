@@ -1,23 +1,23 @@
 extends layout
 
 block content
-  .container-fluid
-    .row.col.justify-content-center
-        h1 Lobby: #{games.code}
-    .row.justify-content-center.form-group
-        for user in games.users
-            .d-flex.justify-content-center
-                form(method="post", action="/remove_user")
-                    .col.btn-group
-                        a.btn.btn-primary #{user.username}
-                        input(name="toDelete", value=user, hidden)
-                        button.btn.btn-danger(type="submit") X
-    .row.justify-content-center
-        .form-group
-        form(method="post", action="/night")
-            button.btn.btn-primary(type="submit") Start Game
+    .container-fluid
+        .row.col.justify-content-center
+            h1 Lobby: #{games.code}
+        .row.justify-content-center.form-group
+            for user in games.users
+                .d-flex.justify-content-center
+                    form(method="post" action="/remove_user")
+                        .col.btn-group
+                            a.btn.btn-primary #{user.username}
+                            input(name="toDelete", value=user, hidden)
+                            button.btn.btn-danger(type="submit") X
+        .row.justify-content-center
+            .form-group
+            form(method="post" action="/night")
+                button.btn.btn-primary(type="submit") Start Game
 
-    script.
-        setTimeout(() =>location.reload(), 3000);
-    script.
-        $.ajax({method: "GET",url: "/night/started",success: function (result) {if(result){location.href = '/night';}}});
+        script.
+            setTimeout(()=>location.reload(), 3000);
+        script.
+            $.ajax({method: "GET",url: "/night/started",success: function (result) {if(result){location.href = '/night';}}});
