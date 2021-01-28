@@ -21,6 +21,8 @@ block content
               input.form-control(name="code", type="number", placeholder="Enter code or press 'Create Room'")
             .input-group-append
               button.btn.btn-primary(name="join", type="submit") Join
+    .d-flex.justify-content-center
+      p Or
     form(name="host_user", method="post", action="/create_code")
       input(id="create", name="username_copy", value="Yeet", hidden)
       .d-flex.justify-content-center

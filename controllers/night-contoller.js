@@ -72,6 +72,7 @@ function loadNight(req, res) {
     collection.findOne(
       {
         code: code,
+        
       },
       (err, result) => {
         console.log(result);
@@ -162,9 +163,10 @@ function loadNight(req, res) {
 
 function getRoles(numberOfPlayers) {
   let roles = ["Merlin", "Assassin", "Percival", "Morgana", "Good Knight"];
-  for (let i = roles.length; i < numberOfPlayers; i++) {
+  for (let i = roles.length - 1; i < numberOfPlayers;) {
     roles.push("Good Knight");
-    if (i >= numberOfPlayers)
+    i++;
+    if ( !(i < numberOfPlayers))
       break;
     roles.push("Bad Knight");
     i++;

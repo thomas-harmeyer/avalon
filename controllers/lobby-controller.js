@@ -81,7 +81,7 @@ function joinLobby(req, res) {
 }
 
 function removeUser(req, res) {
-  let toDelete = req.body.toDelete;
+  let toDelete = JSON.parse(req.body.toDelete).username;
   console.log("toDelete", toDelete);
   mongoController.connectToDb(function (db) {
     let users = db.collection("games");
@@ -91,8 +91,11 @@ function removeUser(req, res) {
       },
       {
         $pull: {
-          users: toDelete,
+          users: {username : toDelete},
         },
+      },
+      {
+        multi:true
       }
     );
   });

@@ -1,7 +1,7 @@
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
-var bodyParser = require('body-parser')
+//var bodyParser = require('body-parser')
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
@@ -24,7 +24,7 @@ app.use(
     extended: false,
   })
 );
-app.use(bodyParser);
+//app.use(bodyParser);
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
