@@ -2,27 +2,31 @@ extends layout
 
 block content
     .container.container-small
-        .d-flex.justify-content-center
-            h2#error.text-danger Please put the correct number of people on this mission
-        .d-flex.justify-content-center
-            h1 Pick a #{missionSize} person mission:
-        .d-flex.justify-content-center
-            .row.justify-content-center.form-group
-                for user in users
-                    .d-flex.justify-content-center
-                        .col
-                            a.btn.btn-secondary #{user.username}
-        .d-flex.justify-content-center.row
-            a#submit.btn.btn-warning send mission
-        #missionForm.d-flex.justify-content-center
-            .row.justify-content-center
-                .col.form-group
-                    form(method="post", action="/vote")
-                        button.btn.btn-primary.vote(type="submit" name="votePass") Pass
-                        .col.form-group
-                    form(method="post", action="/vote")
-                        button.btn.btn-danger.vote(type="submit" name="voteFail") Fail
-                
+        if showMission    
+            .d-flex.justify-content-center
+                h2#error.text-danger Please put the correct number of people on this mission
+            .d-flex.justify-content-center
+                h1 Pick a #{missionSize} person mission:
+            .d-flex.justify-content-center
+                .row.justify-content-center.form-group
+                    for user in users
+                        .d-flex.justify-content-center
+                            .col
+                                a.btn.btn-secondary #{user.username}
+            .d-flex.justify-content-center.row
+                a#submit.btn.btn-warning send mission
+            #missionForm.d-flex.justify-content-center
+                .row.justify-content-center
+                    .col.form-group
+                        form(method="post" action="/vote")
+                            button.btn.btn-primary.vote(type="submit" name="votePass") Pass
+                            .col.form-group
+                        form(method="post" action="/vote")
+                            button.btn.btn-danger.vote(type="submit" name="voteFail") Fail
+        else
+            .d-flex.justify-content-center
+                h1 Sit tight, there is a mission going on right now
+
 
     script(type="text/javascript").
         $('a').each(function() {
@@ -71,7 +75,7 @@ block content
                         }else{
                             $(".vote").hide();
                         }
-                        window.setTimeout(isOnMission,3000);
+                        window.setTimeout(()=>location.reload(),3000);
                         console.log(result);
                     }
                 });
