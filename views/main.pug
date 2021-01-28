@@ -3,6 +3,8 @@ extends layout
 block content
     .container.container-small
         .d-flex.justify-content-center
+            h2#error.text-danger Please put the correct number of people on this mission
+        .d-flex.justify-content-center
             h1 Pick a #{missionSize} person mission:
         .d-flex.justify-content-center
             .row.justify-content-center.form-group
@@ -37,8 +39,7 @@ block content
         });
     script(type="text/javascript").
         $("#submit").click(()=>{
-            let suggestedUsers = {"users" : [],
-            "things":"yes"};
+            let suggestedUsers = {"users" : []};
             $("a.btn-primary").each((index,value)=> {
                 suggestedUsers.users.push($(value).text());
             });
@@ -57,18 +58,24 @@ block content
             });
         });
     script(type="text/javascript").
-        var isOneMission=false;
         window.onload=()=>{
             $(".vote").hide();
+            function isOnMission() {
                 $.ajax({
                     method: "GET",
                     url: "/main/new_mission",
                     success: function (result) 
                     {
                         if(result==true){
-                             $(".vote").show();
+                            $(".vote").show();
+                        }else{
+                            $(".vote").hide();
                         }
+                        window.setTimeout(isOnMission,3000);
                         console.log(result);
                     }
                 });
+            }
+        isOnMission();
         };
+        //setInterval(isOnMission, 3000);
