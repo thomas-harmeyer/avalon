@@ -11,51 +11,68 @@ function createMission(req, res) {
     let username = req.cookies.username;
     console.log(req.body);
     suggestedUsers = req.body["users[]"];
+    missionIsActive(function (err, obj) {
+        if (obj == null) {
+            mongoController.connectToDb(function (db) {
+                let collection = db.collection('missions');
+                collection.insertOne({
+                        code: code,
+                        suggester: username,
+                        suggestedUsers: suggestedUsers,
+                        activeUsers: suggestedUsers,
+                        active: "true"
+                    },
+                    function () {
+                        missionActive = true;
+                    }
+                )
+
+            });
+        } else {
+            main(req, res);
+        }
+    });
+
+}
+
+function missionIsActive(callback, code) {
     mongoController.connectToDb(function (db) {
         let collection = db.collection('missions');
         collection.findOne({
                 code: code,
                 active: "true"
             },
-            function (err, res) {
-                if (res == null) {
-                    mongoController.connectToDb(function (db) {
-                        let collection = db.collection('missions');
-                        collection.insertOne({
-                                code: code,
-                                suggester: username,
-                                suggestedUsers: suggestedUsers,
-                                activeUsers: suggestedUsers,
-                                active: "true"
-                            },
-                            function () {
-                                missionActive = true;
-                            }
-                        )
-
-                    });
-                }
-            }
-        )
+            function (err, obj) {
+                callback(obj != null);
+            });
 
     });
-
 }
 
 function main(req, res) {
     let code = req.cookies.code;
-    mongoController.connectToDb(function (db) {
-        db.collection("games").findOne({
-                code: code,
-            },
-            function (err, result) {
-                res.render("main", {
-                    missionSize: 3,
-                    users: result.users
-                });
-            }
-        );
-    });
+    missionIsActive(function (activeMission) {
+        console.log(activeMission);
+        mongoController.connectToDb(function (db) {
+            db.collection("games").findOne({
+                    code: code,
+                },
+                function (err, result) {
+                    if (activeMission) {
+                        res.render("main", {
+                            showMission: false
+                        })
+                    } else {
+                        res.render("main", {
+                            showMission: true,
+                            missionSize: 3,
+                            users: result.users
+                        });
+                    }
+                }
+            );
+        })
+    }, code);
 }
 
 
