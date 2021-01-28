@@ -3,6 +3,8 @@ var assert = require("assert");
 var mongoController = require("../controllers/mongo-controller");
 
 function loadLanding(req, res) {
+  res.clearCookie("code");
+  res.clearCookie("username");
   let code = "";
   console.log(req.query);
   if (req.query.code) {
