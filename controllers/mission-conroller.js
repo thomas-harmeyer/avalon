@@ -11,11 +11,15 @@ function createMission(req, res) {
     let username = req.cookies.username;
     console.log(req.body);
     suggestedUsers = req.body["users[]"];
+    if (!Array.isArray(suggestedUsers)) {
+        suggestedUsers = [suggestedUsers];
+    }
     missionIsActive(function (err, obj) {
         if (obj == null) {
             mongoController.connectToDb(function (db) {
                 let collection = db.collection('missions');
                 collection.insertOne({
+                        updated: Date.now(),
                         code: code,
                         suggester: username,
                         suggestedUsers: suggestedUsers,
@@ -60,23 +64,27 @@ function main(req, res) {
                     code: code,
                 },
                 function (err, result) {
-                    if (activeMission) {
-                        if (missions.activeUsers && missions.activeUsers.includes(username)) {
-                            res.render("main", {
-                                showOnMission: true,
-                                users: result.users
-                            })
+                    if (result == null) {
+                        res.redirect("/");
+                    } else {
+                        if (activeMission) {
+                            if (missions.activeUsers && missions.activeUsers.includes(username)) {
+                                res.render("main", {
+                                    state: "showOnMission",
+                                    users: result.users
+                                })
+                            } else {
+                                res.render("main", {
+                                    state: "showWait"
+                                })
+                            }
                         } else {
                             res.render("main", {
-                                showWait: true
-                            })
+                                state: "showMission",
+                                missionSize: 3,
+                                users: result.users
+                            });
                         }
-                    } else {
-                        res.render("main", {
-                            showMission: true,
-                            missionSize: 3,
-                            users: result.users
-                        });
                     }
                 }
             );
@@ -103,6 +111,36 @@ function getCurrentMission(req, res) {
     });
 }
 
+function getUserState(req, res) {
+    let code = req.cookies.code;
+    let username = req.cookies.username;
+    missionIsActive(function (activeMission, missions) {
+        console.log(activeMission);
+        console.log(missions);
+        mongoController.connectToDb(function (db) {
+            db.collection("games").findOne({
+                    code: code,
+                },
+                function (err, result) {
+                    if (result == null) {
+                        res.redirect("/");
+                    } else {
+                        if (activeMission) {
+                            if (missions.activeUsers && missions.activeUsers.includes(username)) {
+                                res.send("showOnMission");
+                            } else {
+                                res.send("showWait");
+                            }
+                        } else {
+                            res.send("showMission");
+                        }
+                    }
+                }
+            );
+        })
+    }, code);
+}
+
 function vote(req, res) {
     let code = req.cookies.code;
     let username = req.cookies.username;
@@ -127,9 +165,15 @@ function vote(req, res) {
                     console.log(err);
                 }
                 console.log(result);
-                res.redirect('/main');
+
+                checkForInactiveMissions(
+                    () => res.redirect('/main'), code);
             });
     });
+
+}
+
+function checkForInactiveMissions(callback, code) {
     mongoController.connectToDb(function (db) {
         db.collection("missions").updateMany({
             code: code,
@@ -156,5 +200,6 @@ module.exports = {
     createMission,
     getCurrentMission,
     vote,
-    main
+    main,
+    getUserState
 };
