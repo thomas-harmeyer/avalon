@@ -61,7 +61,7 @@ function main(req, res) {
                 },
                 function (err, result) {
                     if (activeMission) {
-                        if (missions.suggestedUsers && missions.suggestedUsers.includes(username)) {
+                        if (missions.activeUsers && missions.activeUsers.includes(username)) {
                             res.render("main", {
                                 showOnMission: true,
                                 users: result.users
@@ -136,11 +136,11 @@ function vote(req, res) {
             active: "true",
             activeUsers: {
                 $exists: true,
-                $ne: []
+                $eq: []
             }
         }, {
             $set: {
-                "active": "false"
+                active: "false"
             }
         });
     });
