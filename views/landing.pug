@@ -5,26 +5,23 @@ block content
     p= err
   .container.container-small
     .d-flex.justify-content-center
-        h1 #{title}
+      h1 #{title}
     .d-flex.justify-content-center
-        p Welcome to the game of #{title}
-    form(name="add_user", method="post", action="/")
+      p Welcome to the game of #{title}
+    form(name="add_user" method="post" action="/")
       .d-flex.justify-content-center
         .form-group
-          input.form-control(id="username",name="username", type="text", placeholder="Username")
+          input.form-control(id="username" name="username" type="text" placeholder="Username")
       .d-flex.justify-content-center
         .form-group
           .input-group
-            if typeof(code) !== 'undefined'
-              input.form-control(name="code", type="number", placeholder="ope", value= code)
-            else
-              input.form-control(name="code", type="number", placeholder="Enter code or press 'Create Room'")
+            input.form-control(name="code" type="number" placeholder="O.P.E.", value= code)
             .input-group-append
-              button.btn.btn-primary(name="join", type="submit") Join
+              button.btn.btn-primary(name="join" type="submit") Join
     .d-flex.justify-content-center
       p Or
-    form(name="host_user", method="post", action="/create_code")
-      input(id="create", name="username_copy", value="Yeet", hidden)
+    form(name="host_user" method="post" action="/create_code")
+      input(id="create" name="username_copy" value="Yeet", hidden)
       .d-flex.justify-content-center
         .form-group
-          button.btn.btn-primary(name="host", type="submit", onclick="$('#create').val($('#username').val())") Create Room
+          button.btn.btn-primary(name="host" type="submit" onclick="$('#create').val($('#username').val())") Create Room
