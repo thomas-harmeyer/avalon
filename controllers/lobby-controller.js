@@ -16,6 +16,9 @@ function loadLanding(req, res) {
 }
 
 function createLobby(req, res) {
+  if (req.cookies.code) {
+    res.redirect("/games");
+  }
   // get username from body and generate a new code and verify them
   let username = req.body.username_copy;
   let code =
@@ -68,7 +71,9 @@ function joinLobby(req, res) {
       res.cookie("code", code, {
         maxAge: timeController.hour(24),
       });
-      loadLobby(req, res);
+      req.cookies.username = username;
+      req.cookies.code = code;
+      res.redirect("/games");
     }
   }))).catch((err) => verifyController.onMongoDbException(err, res));
 }
@@ -91,7 +96,7 @@ function removeUser(req, res) {
     },
   }));
   // redirect to lobby
-  loadLobby(req, res);
+  res.redirect("/games");
 }
 
 function loadLobby(req, res) {

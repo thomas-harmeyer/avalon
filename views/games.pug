@@ -18,6 +18,4 @@ block content
                 button.btn.btn-primary(type="submit") Start Game
 
         script.
-            setTimeout(()=>location.reload(), 3000);
-        script.
             $.ajax({method: "GET",url: "/night/started",success: function (result) {if(result){location.href = '/night';}}});

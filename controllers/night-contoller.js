@@ -6,7 +6,7 @@ const verifyController = require("./verify-controller");
 // check if your game has started
 function hasStarted(req, res) {
   // get creds and verify them
-  const username = req.cookies.code;
+  const username = req.cookies.username;
   const code = req.cookies.code;
   if (!verifyController.verifyCredentials(username, code)) {
     return;
@@ -24,7 +24,7 @@ function hasStarted(req, res) {
 // if the game has already started it will not assign roles and send you to night
 function assignRoles(req, res) {
   // get creds and verify them
-  const username = req.cookies.code;
+  const username = req.cookies.username;
   const code = req.cookies.code;
   if (!verifyController.verifyCredentials(username, code)) {
     return;
@@ -36,7 +36,7 @@ function assignRoles(req, res) {
   }).then((result) => {
     // if the game has started then don't assign roles instead go to night
     if (result.started == 'true') {
-      loadNight(req, res);
+      res.redirect("/night");
       return;
     }
 
@@ -72,7 +72,7 @@ function assignRoles(req, res) {
 // loads night; finds your role and the other players you role should know
 function loadNight(req, res) {
   // get creds and verify them
-  const username = req.cookies.code;
+  const username = req.cookies.username;
   const code = req.cookies.code;
   if (!verifyController.verifyCredentials(username, code)) {
     return;
