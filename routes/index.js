@@ -16,7 +16,7 @@ router.get("/night/started", nightController.hasStarted)
 router.get("/night", nightController.loadNight);
 router.post("/night", nightController.assignRoles);
 router.post("/createMission", missionController.createMission);
-router.get("/main", missionController.main);
+router.get("/main", missionController.loadMain);
 router.get("/main/state", missionController.getUserState);
 router.get("/main/new_mission", missionController.getCurrentMission)
 router.post("/main/new_mission", missionController.createMission)
