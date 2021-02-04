@@ -51,10 +51,10 @@ function createMission(req, res) {
                         active: "true",
                         numberOfUsers: numOfUsers,
                         numOfFails: numOfFails
-                    }, () => main(req, res))
+                    }, () => loadMain(req, res))
                 });
             } else {
-                main(req, res);
+                loadMain(req, res);
             }
         }, code);
     }, code);
@@ -110,7 +110,7 @@ function missionIsActive(callback, code) {
     });
 }
 
-function main(req, res) {
+function loadMain(req, res) {
     var missionRes = [];
     let code = req.cookies.code;
     let username = req.cookies.username;
@@ -270,6 +270,6 @@ module.exports = {
     createMission,
     getCurrentMission,
     vote,
-    main,
+    loadMain,
     getUserState
 };
