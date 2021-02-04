@@ -1,5 +1,4 @@
 var mongoController = require("./mongo-controller");
-var assert = require("assert");
 let missionPersonCount = [{
         numOfPlayers: [2, 3, 2, 3, 3],
         numOfFails: [1, 1, 1, 1, 1]

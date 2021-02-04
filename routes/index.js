@@ -18,8 +18,8 @@ router.post("/night", nightController.assignRoles);
 router.post("/createMission", missionController.createMission);
 router.get("/main", missionController.loadMain);
 router.get("/main/state", missionController.getUserState);
-router.get("/main/new_mission", missionController.getCurrentMission)
-router.post("/main/new_mission", missionController.createMission)
-router.post("/vote", missionController.vote)
+router.get("/main/new_mission", missionController.getCurrentMission);
+router.post("/main/new_mission", missionController.createMission);
+router.post("/vote", missionController.vote);
 
 module.exports = router;

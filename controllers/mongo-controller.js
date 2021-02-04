@@ -1,7 +1,6 @@
 var mongodb = require("mongodb");
 var MongoClient = mongodb.MongoClient;
 
-var assert = require("assert");
 
 function connectToDb() {
   const url = "mongodb://localhost:27017";
