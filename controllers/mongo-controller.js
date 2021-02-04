@@ -3,15 +3,15 @@ var MongoClient = mongodb.MongoClient;
 
 var assert = require("assert");
 
-function connectToDb(callback) {
+function connectToDb() {
   const url = "mongodb://localhost:27017";
   const dbName = "avalon";
-  MongoClient.connect(url, function (err, client) {
-    assert.strictEqual(null, err);
+  const connection = MongoClient.connect(url);
+
+  return connection.then(function (client) {
     console.log("Connected successfully to server");
     const db = client.db(dbName);
-    callback(db);
-    client.close();
+    return db;
   });
 }
 
