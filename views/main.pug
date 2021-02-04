@@ -5,7 +5,15 @@ block scripts
 
 block content
     .container.container-small
-        if state="showMission"    
+        each mission in missions
+            if(mission=="pass")
+                span(style="color:green;font-size:10em" onclick="(alert('pass'))") &#10004;
+            else
+                if(mission==1)
+                    span(style="color:red;font-size:10em" onclick="(alert('"+mission+" fail'))") &#10006;
+                else
+                    span(style="color:red;font-size:10em" onclick="(alert('"+mission+" fails'))") &#10006;
+        if state=="showMission"    
             .d-flex.justify-content-center
                 h2#error.text-danger Please put the correct number of people on this mission
             .d-flex.justify-content-center
@@ -18,10 +26,10 @@ block content
                                 a.btn.btn-secondary #{user.username}
             .d-flex.justify-content-center.row
                 a#submit.btn.btn-warning send mission
-        else if state="showWait"
+        else if state=="showWait"
             .d-flex.justify-content-center
                 h1 Sit tight, there is a mission going on right now
-        else if state="showOnMission"
+        else if state=="showOnMission"
             #missionForm.d-flex.justify-content-center
                 .row.justify-content-center
                     .col.form-group
@@ -33,43 +41,4 @@ block content
 
 
     script(type="text/javascript").
-        var state = #{state};
-    script(type="text/javascript").
-        $("#submit").click(()=>{
-            let suggestedUsers = {"users" : []};
-            $("a.btn-primary").each((index,value)=> {
-                suggestedUsers.users.push($(value).text());
-            });
-            $("a.btn-primary").removeClass("btn-primary").addClass("btn-secondary");
-            $.ajax({
-                method: "POST",
-                url: "/main/new_mission",
-                data: suggestedUsers,
-                success: function (result) 
-                {
-                    if(result)
-                    {
-                        location.href = '/main';
-                    }
-                }
-            });
-        });
-    script(type="text/javascript").
-        $(".vote").hide();
-        function isOnMission() {
-            $.ajax({
-                method: "GET",
-                url: "/main/new_mission",
-                success: function (result) 
-                {
-                    if(result==true){
-                        $(".vote").show();
-                    }else{
-                        $(".vote").hide();
-                    }
-                    console.log(result);
-                }
-            });
-        }
-        isOnMission();
-        //setInterval(isOnMission, 3000);
+        var state = "#{state}";

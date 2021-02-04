@@ -75,7 +75,13 @@ function loadNight(req, res) {
       },
       (err, result) => {
         console.log(result);
-        let users = result.users;
+        let users = "";
+        if (result.users)
+          users = result.users;
+        else {
+          res.redirect("/");
+          return;
+        }
         let role = {
           username: "",
           role: ""

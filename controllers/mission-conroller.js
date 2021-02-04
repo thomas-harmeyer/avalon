@@ -1,9 +1,33 @@
 var mongoController = require("./mongo-controller");
 var assert = require("assert");
+let missionPersonCount = [{
+        numOfPlayers: [2, 3, 2, 3, 3],
+        numOfFails: [1, 1, 1, 1, 1]
+    },
+    {
+        numOfPlayers: [2, 3, 4, 3, 4],
+        numOfFails: [1, 1, 1, 1, 1]
+    },
+    {
+        numOfPlayers: [2, 3, 3, 4, 4],
+        numOfFails: [1, 1, 1, 2, 1]
+    },
+    {
+        numOfPlayers: [3, 4, 4, 5, 5],
+        numOfFails: [1, 1, 1, 2, 1]
+    },
+    {
+        numOfPlayers: [3, 4, 4, 5, 5],
+        numOfFails: [1, 1, 1, 2, 1]
+    },
+    {
+        numOfPlayers: [3, 4, 4, 5, 5],
+        numOfFails: [1, 1, 1, 2, 1]
+    }
+];
 const {
     send
 } = require("process");
-var missionActive = false;
 var suggestedUsers = {};
 
 function createMission(req, res) {
@@ -14,29 +38,65 @@ function createMission(req, res) {
     if (!Array.isArray(suggestedUsers)) {
         suggestedUsers = [suggestedUsers];
     }
-    missionIsActive(function (err, obj) {
-        if (obj == null) {
-            mongoController.connectToDb(function (db) {
-                let collection = db.collection('missions');
-                collection.insertOne({
+    getNextMissionCount(function (numOfUsers, numOfFails) {
+        missionIsActive(function (err, obj) {
+            if (obj == null) {
+                mongoController.connectToDb(function (db) {
+                    let collection = db.collection('missions');
+                    collection.insertOne({
                         updated: Date.now(),
                         code: code,
                         suggester: username,
                         suggestedUsers: suggestedUsers,
                         activeUsers: suggestedUsers,
-                        active: "true"
-                    },
-                    function () {
-                        missionActive = true;
-                    }
-                )
-
-            });
-        } else {
-            main(req, res);
-        }
+                        active: "true",
+                        numberOfUsers: numOfUsers,
+                        numOfFails: numOfFails
+                    }, () => main(req, res))
+                });
+            } else {
+                main(req, res);
+            }
+        }, code);
     }, code);
+}
 
+function getNextMissionCount(callback, code) {
+    let numOfPlayers;
+    mongoController.connectToDb(function (db) {
+        db.collection("games").findOne({
+            code: code,
+        }, (function (err, res) {
+            if (err) {
+                console.log(err);
+            }
+            console.log(res);
+            if (res != null)
+                numOfPlayers = res.users.length;
+        }));
+    });
+    mongoController.connectToDb(function (db) {
+        db.collection("missions").find({
+            code: code,
+            active: "false"
+        }).sort({
+            update: 1
+        }).toArray(function (err, res) {
+            if (err) {
+                console.log(err);
+            }
+            console.log(res);
+            missionNumber = res.length;
+            try {
+                let numOfUsers = missionPersonCount[numOfPlayers - 5].numOfPlayers[missionNumber];
+                let numOfFails = missionPersonCount[numOfPlayers - 5].numOfFails[missionNumber];
+                callback(numOfUsers, numOfFails);
+            } catch (indexOutOfBoundError) {
+                console.log(indexOutOfBoundError);
+                callback(0);
+            }
+        });
+    })
 }
 
 function missionIsActive(callback, code) {
@@ -54,8 +114,23 @@ function missionIsActive(callback, code) {
 }
 
 function main(req, res) {
+    var missionRes = [];
     let code = req.cookies.code;
     let username = req.cookies.username;
+    mongoController.connectToDb(function (db) {
+        db.collection("missions").find({
+            code: code,
+            active: "false"
+        }).sort({
+            update: 1
+        }).toArray(function (err, res) {
+            if (err) {
+                console.log(err);
+            }
+            console.log(res);
+            res.forEach(mission => missionRes.push(mission.fails < mission.numOfFails ? "pass" : mission.fails));
+        });
+    })
     missionIsActive(function (activeMission, missions) {
         console.log(activeMission);
         console.log(missions);
@@ -70,20 +145,23 @@ function main(req, res) {
                         if (activeMission) {
                             if (missions.activeUsers && missions.activeUsers.includes(username)) {
                                 res.render("main", {
+                                    missions: missionRes,
                                     state: "showOnMission",
                                     users: result.users
                                 })
                             } else {
                                 res.render("main", {
+                                    missions: missionRes,
                                     state: "showWait"
                                 })
                             }
                         } else {
-                            res.render("main", {
+                            getNextMissionCount((missionSize) => res.render("main", {
+                                missions: missionRes,
                                 state: "showMission",
-                                missionSize: 3,
+                                missionSize: missionSize,
                                 users: result.users
-                            });
+                            }), code);
                         }
                     }
                 }
@@ -186,7 +264,7 @@ function checkForInactiveMissions(callback, code) {
             $set: {
                 active: "false"
             }
-        });
+        }, callback);
     });
 }
 
