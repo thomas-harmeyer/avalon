@@ -42,7 +42,6 @@ setInterval(() => $.ajax({
             console.log(err);
         },
         success: function (result) {
-            console.log(result);
             if (result != state) {
                 location.reload();
             }

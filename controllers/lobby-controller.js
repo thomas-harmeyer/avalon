@@ -6,7 +6,6 @@ function loadLanding(req, res) {
   res.clearCookie("code");
   res.clearCookie("username");
   let code = "";
-  console.log(req.query);
   if (req.query.code) {
     code = req.query.code;
   }
@@ -17,7 +16,6 @@ function loadLanding(req, res) {
 }
 
 function createLobby(req, res) {
-  console.log("create new user?------------", req.body.username_copy);
   let username = req.body.username_copy;
   let code =
     Math.floor(Math.random() * Math.floor(10)).toString() +
@@ -42,8 +40,6 @@ function createLobby(req, res) {
 function joinLobby(req, res) {
   let username = req.body.username;
   let code = req.body.code;
-  console.log("username", username);
-  console.log("code", code);
   mongoController.connectToDb(function (db) {
     db.collection("games").updateOne({
         code: code,
@@ -56,7 +52,7 @@ function joinLobby(req, res) {
       },
       function (err, result) {
         if (err) {
-          console.log("error", err);
+          console.log(err);
           res.render("landing", {
             err: err,
           });
@@ -81,7 +77,6 @@ function joinLobby(req, res) {
 
 function removeUser(req, res) {
   let toDelete = JSON.parse(req.body.toDelete).username;
-  console.log("toDelete", toDelete);
   mongoController.connectToDb(function (db) {
     let users = db.collection("games");
     users.update({
@@ -108,7 +103,6 @@ function loadLobby(req, res) {
       },
       function (err, result) {
         assert.strictEqual(null, err);
-        console.log("Found 1 result:", result);
         res.render("games", {
           games: result,
         });

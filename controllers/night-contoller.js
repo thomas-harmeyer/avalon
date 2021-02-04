@@ -30,8 +30,6 @@ function assignRoles(req, res) {
           return;
         }
         assert.strictEqual(null, err);
-        console.log("Found 1 result:", result);
-        console.log(typeof result);
         users = result.users;
         let bulkUpdate = [];
         let roles = getRoles(users.length);
@@ -54,7 +52,6 @@ function assignRoles(req, res) {
         });
         mongoController.connectToDb((db) => {
           let collection = db.collection("games");
-          console.log(users);
           collection.bulkWrite(bulkUpdate, (err, result) => {
             loadNight(req, res);
           });
@@ -74,7 +71,6 @@ function loadNight(req, res) {
 
       },
       (err, result) => {
-        console.log(result);
         let users = "";
         if (result.users)
           users = result.users;
@@ -87,7 +83,6 @@ function loadNight(req, res) {
           role: ""
         };
         let know = [];
-        console.log(users);
         users.forEach((value, key) => {
           if (value.username == username) {
             role.username = value.username;
@@ -147,8 +142,6 @@ function loadNight(req, res) {
             });
             break;
         }
-        console.log("know----------", know);
-        console.log("role----------", role);
         res.render("night", {
           role: role,
           users: know,

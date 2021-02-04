@@ -7,7 +7,6 @@ function sec(seconds) {
 }
 
 function min(mins) {
-    console.log("------------", mins * minConst)
     return mins * minConst;
 }
 

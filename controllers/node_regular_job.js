@@ -1,8 +1,7 @@
-var mongoController = require("./mongo-controller");
-let timerMinutes = 5;
-let timeInterval = timerMinutes * 60000;
-let cutOffMinutes = 60;
-let cutOffInterval = cutOffMinutes * 60000;
+const mongoController = require("./mongo-controller");
+const timeController = require("./time-controller");
+const timeInterval = timeController.min(5);
+const cutOffInterval = timeController.min(60);
 setInterval(function () {
     console.log("I am doing my 5 minutes check");
     var removedLobbies = [];
@@ -16,7 +15,7 @@ setInterval(function () {
                 if (err) {
                     console.log(err);
                 }
-                console.log(res.result);
+                console.log("games deleted:" + res.result);
             }
         });
     });
@@ -30,7 +29,7 @@ setInterval(function () {
                 if (err) {
                     console.log(err);
                 }
-                console.log(res.result);
+                console.log("missions deleted:" + res.result);
             }
         });
     });

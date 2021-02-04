@@ -33,7 +33,6 @@ var suggestedUsers = {};
 function createMission(req, res) {
     let code = req.cookies.code;
     let username = req.cookies.username;
-    console.log(req.body);
     suggestedUsers = req.body["users[]"];
     if (!Array.isArray(suggestedUsers)) {
         suggestedUsers = [suggestedUsers];
@@ -70,7 +69,6 @@ function getNextMissionCount(callback, code) {
             if (err) {
                 console.log(err);
             }
-            console.log(res);
             if (res != null)
                 numOfPlayers = res.users.length;
         }));
@@ -85,7 +83,6 @@ function getNextMissionCount(callback, code) {
             if (err) {
                 console.log(err);
             }
-            console.log(res);
             missionNumber = res.length;
             try {
                 let numOfUsers = missionPersonCount[numOfPlayers - 5].numOfPlayers[missionNumber];
@@ -132,8 +129,6 @@ function main(req, res) {
         });
     })
     missionIsActive(function (activeMission, missions) {
-        console.log(activeMission);
-        console.log(missions);
         mongoController.connectToDb(function (db) {
             db.collection("games").findOne({
                     code: code,
@@ -193,8 +188,6 @@ function getUserState(req, res) {
     let code = req.cookies.code;
     let username = req.cookies.username;
     missionIsActive(function (activeMission, missions) {
-        console.log(activeMission);
-        console.log(missions);
         mongoController.connectToDb(function (db) {
             db.collection("games").findOne({
                     code: code,
@@ -242,7 +235,6 @@ function vote(req, res) {
                 if (err) {
                     console.log(err);
                 }
-                console.log(result);
 
                 checkForInactiveMissions(
                     () => res.redirect('/main'), code);
