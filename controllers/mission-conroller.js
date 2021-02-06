@@ -1,5 +1,8 @@
-var mongoController = require("./mongo-controller");
-let missionPersonCount = [{
+const mongoController = require("./mongo-controller");
+const verifyController = require("./verify-controller");
+// the uses [num of players-5][mission number] for both arrays
+// note both arrays are 0 indexed so use [player-5][mission]
+const missionPersonCount = [{
         numOfPlayers: [2, 3, 2, 3, 3],
         numOfFails: [1, 1, 1, 1, 1]
     },
@@ -24,20 +27,28 @@ let missionPersonCount = [{
         numOfFails: [1, 1, 1, 2, 1]
     }
 ];
-const {
-    send
-} = require("process");
-var suggestedUsers = {};
 
 function createMission(req, res) {
-    let code = req.cookies.code;
-    let username = req.cookies.username;
+    // get creds and verify them
+    const username = req.cookies.username;
+    const code = req.cookies.code;
+    if (!verifyController.verifyCredentials(username, code)) {
+        return;
+    }
+
+
+    //get suggested users and hope to god it works
     suggestedUsers = req.body["users[]"];
+    if (!verifyController.verifyExists(suggestedUsers, res)) {
+        return;
+    }
     if (!Array.isArray(suggestedUsers)) {
         suggestedUsers = [suggestedUsers];
     }
-    getNextMissionCount(function (numOfUsers, numOfFails) {
-        missionIsActive(function (err, obj) {
+
+    //this is so terrible and I am going to have to spend so much time fixing it
+    getNextMissionCount(code).next((res) => {
+        missionIsActive().then((obj) => {
             if (obj == null) {
                 mongoController.connectToDb(function (db) {
                     let collection = db.collection('missions');
@@ -48,51 +59,48 @@ function createMission(req, res) {
                         suggestedUsers: suggestedUsers,
                         activeUsers: suggestedUsers,
                         active: "true",
-                        numberOfUsers: numOfUsers,
-                        numOfFails: numOfFails
-                    }, () => loadMain(req, res))
+                        numberOfUsers: res.numOfUsers,
+                        numOfFails: res.numOfFails
+                    }).then(() => loadMain(req, res))
                 });
             } else {
                 loadMain(req, res);
             }
-        }, code);
-    }, code);
+        });
+    });
 }
 
-function getNextMissionCount(callback, code) {
-    let numOfPlayers;
-    mongoController.connectToDb(function (db) {
-        db.collection("games").findOne({
-            code: code,
-        }, (function (err, res) {
-            if (err) {
-                console.log(err);
-            }
-            if (res != null)
-                numOfPlayers = res.users.length;
-        }));
-    });
-    mongoController.connectToDb(function (db) {
+function getNextMissionCount(code) {
+    let numOfPlayers, missionNumber;
+    mongoController.connectToDb().next(db.collection("games").findOne({
+        code: code,
+    }).next((res) => {
+        numOfPlayers = res.users.length;
         db.collection("missions").find({
             code: code,
             active: "false"
         }).sort({
             update: 1
-        }).toArray(function (err, res) {
-            if (err) {
-                console.log(err);
-            }
+        }).toArray().next((res) => {
             missionNumber = res.length;
-            try {
-                let numOfUsers = missionPersonCount[numOfPlayers - 5].numOfPlayers[missionNumber];
-                let numOfFails = missionPersonCount[numOfPlayers - 5].numOfFails[missionNumber];
-                callback(numOfUsers, numOfFails);
-            } catch (indexOutOfBoundError) {
-                console.log(indexOutOfBoundError);
-                callback(0);
+            if (numOfPlayers - 5 <= 0 || missionNumber <= 0) {
+                console.log("out of bounds");
+                return {
+                    numOfUsers: 0,
+                    numOfFails: 0
+                };
             }
+            let numOfUsers = missionPersonCount[numOfPlayers - 5].numOfPlayers[missionNumber];
+            let numOfFails = missionPersonCount[numOfPlayers - 5].numOfFails[missionNumber];
+            return {
+                numOfUsers: numOfUsers,
+                numOfFails: numOfFails
+            };
         });
-    })
+    })).catch((err) => {
+        verifyController.onMongoDbException(err, res);
+    });
+
 }
 
 function missionIsActive(callback, code) {
@@ -231,9 +239,6 @@ function vote(req, res) {
                 }
             },
             function (err, result) {
-                if (err) {
-                    console.log(err);
-                }
 
                 checkForInactiveMissions(
                     () => res.redirect('/main'), code);
