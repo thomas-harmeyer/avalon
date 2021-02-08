@@ -36,7 +36,6 @@ function createMission(req, res) {
         return;
     }
 
-
     //get suggested users and hope to god it works
     suggestedUsers = req.body["users[]"];
     if (!verifyController.verifyExists(suggestedUsers, res)) {
@@ -61,10 +60,10 @@ function createMission(req, res) {
                         active: "true",
                         numberOfUsers: res.numOfUsers,
                         numOfFails: res.numOfFails
-                    }).then(() => loadMain(req, res))
+                    }).then(() => res.redirect("/main"))
                 });
             } else {
-                loadMain(req, res);
+                res.redirect("/main");
             }
         });
     });
@@ -103,73 +102,66 @@ function getNextMissionCount(code) {
 
 }
 
-function missionIsActive(callback, code) {
+function missionIsActive(code) {
     mongoController.connectToDb(function (db) {
         let collection = db.collection('missions');
         collection.findOne({
-                code: code,
-                active: "true"
-            },
-            function (err, obj) {
-                callback(obj != null, obj);
-            });
-
+            code: code,
+            active: "true"
+        }).next((obj) => {
+            return (obj);
+        });
     });
 }
 
 function loadMain(req, res) {
-    var missionRes = [];
+    var missions = [];
     let code = req.cookies.code;
     let username = req.cookies.username;
-    mongoController.connectToDb(function (db) {
-        db.collection("missions").find({
-            code: code,
-            active: "false"
-        }).sort({
-            update: 1
-        }).toArray(function (err, res) {
-            if (err) {
-                console.log(err);
-            }
-            console.log(res);
-            res.forEach(mission => missionRes.push(mission.fails < mission.numOfFails ? "pass" : mission.fails));
-        });
-    })
-    missionIsActive(function (activeMission, missions) {
-        mongoController.connectToDb(function (db) {
+    mongoController.connectToDb().then((db) => db.collection("missions").find({
+        code: code,
+        active: "false"
+    }).sort({
+        update: 1
+    }).toArray().then((res) => {
+        //add all missions to missions (array)
+        res.forEach(mission => missions.push(mission.fails < mission.numOfFails ? "pass" : mission.fails));
+
+        //
+        missionIsActive(code).next((activeMission, missions) => {
             db.collection("games").findOne({
-                    code: code,
-                },
-                function (err, result) {
-                    if (result == null) {
-                        res.redirect("/");
-                    } else {
-                        if (activeMission) {
-                            if (missions.activeUsers && missions.activeUsers.includes(username)) {
-                                res.render("main", {
-                                    missions: missionRes,
-                                    state: "showOnMission",
-                                    users: result.users
-                                })
-                            } else {
-                                res.render("main", {
-                                    missions: missionRes,
-                                    state: "showWait"
-                                })
-                            }
+                code: code,
+            }).next((res) => {
+                if (res == null) {
+                    res.redirect("/");
+                } else {
+                    if (activeMission) {
+                        if (missions.activeUsers && missions.activeUsers.includes(username)) {
+                            res.render("main", {
+                                missions: missions,
+                                state: "showOnMission",
+                                users: res.users
+                            })
                         } else {
-                            getNextMissionCount((missionSize) => res.render("main", {
-                                missions: missionRes,
-                                state: "showMission",
-                                missionSize: missionSize,
-                                users: result.users
-                            }), code);
+                            res.render("main", {
+                                missions: missions,
+                                state: "showWait"
+                            })
                         }
+                    } else {
+                        getNextMissionCount((missionSize) => res.render("main", {
+                            missions: missions,
+                            state: "showMission",
+                            missionSize: missionSize,
+                            users: res.users
+                        }));
                     }
                 }
-            );
+            });
         })
-    }, code);
+    })).catch((err) => {
+        verifyController.onMongoDbException(err, res);
+    });
 }
 
 
