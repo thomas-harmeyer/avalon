@@ -68,6 +68,8 @@ function createMission(req, res) {
                 res.redirect("/main");
             }
         });
+    }).catch((err) => {
+        verifyController.onMongoDbException(err, res);
     });
 }
 
@@ -85,7 +87,7 @@ function getNextMissionCount(code) {
                 update: 1
             }).toArray().then((result) => {
                 missionNumber = result.length;
-                if (numOfPlayers - 5 <= 0 || missionNumber <= 0) {
+                if (numOfPlayers - 5 < 0 || missionNumber < 0) {
                     console.log("out of bounds");
                     resolve({
                         numOfUsers: 0,
@@ -113,11 +115,13 @@ function missionIsActive(code) {
         collection.findOne({
             code: code,
             active: "true"
-        }).then((result) => resolve(result)).catch(err => reject(err));
-    }))
+        }).then((result) => resolve(result));
+    })).catch(err => reject(err))
 }
 
 function loadMain(req, res) {
+    var missionResult = [];
+    var missionUsers = [];
     var missions = [];
     let code = req.cookies.code;
     let username = req.cookies.username;
@@ -128,8 +132,14 @@ function loadMain(req, res) {
         updated: 1
     }).toArray().then((result) => {
         //add all missions to missions (array)
-        result.forEach(mission => missions.push(mission.fails < mission.numOfFails ? "pass" : mission.fails));
-
+        result.forEach(mission => missionResult.push(mission.fails < mission.numOfFails ? "pass" : mission.fails));
+        result.forEach(mission => missionUsers.push(mission.suggestedUsers));
+        for (i = 0; i < result.length; i++) {
+            missions.push({
+                result: missionResult[i],
+                users: missionUsers[i]
+            });
+        }
         //
         missionIsActive(code).then((currentMission) => {
             db.collection("games").findOne({
@@ -175,14 +185,15 @@ function voteMission(missionId, vote) {
 function getCurrentMission(req, res) {
     let code = req.cookies.code;
     let username = req.cookies.username;
-    mongoController.connectToDb(function (db) {
+    mongoController.connectToDb().then(db => {
         db.collection("missions").findOne({
-                code: code,
-                activeUsers: username
-            },
-            function (err, result) {
-                res.send(result != null)
-            });
+            code: code,
+            activeUsers: username
+        }.then(result => {
+            res.send(result != null)
+        }));
+    }).catch((err) => {
+        verifyController.onMongoDbException(err, res);
     });
 }
 
@@ -209,6 +220,8 @@ function getUserState(req, res) {
                 }
             });
         })
+    }).catch((err) => {
+        verifyController.onMongoDbException(err, res);
     });
 }
 
@@ -233,11 +246,14 @@ function vote(req, res) {
         }).then(() => {
             checkForInactiveMissions(code).then(() => res.redirect('/main'));
         });
+    }).catch((err) => {
+        verifyController.onMongoDbException(err, res);
     });
 
 }
-
+//checks for inactive missions
 function checkForInactiveMissions(code) {
+    //return a promise that will call a response when it is done
     return new Promise((response, reject) => mongoController.connectToDb().then(db => {
         db.collection("missions").updateMany({
             code: code,
@@ -250,8 +266,8 @@ function checkForInactiveMissions(code) {
             $set: {
                 active: "false"
             }
-        }).then(response());
-    }));
+        });
+    })).then(response()).catch(err => reject(err));
 }
 
 
