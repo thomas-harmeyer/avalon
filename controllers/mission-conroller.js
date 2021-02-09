@@ -125,25 +125,25 @@ function loadMain(req, res) {
         code: code,
         active: "false"
     }).sort({
-        update: 1
+        updated: 1
     }).toArray().then((result) => {
         //add all missions to missions (array)
         result.forEach(mission => missions.push(mission.fails < mission.numOfFails ? "pass" : mission.fails));
 
         //
-        missionIsActive(code).then((missions) => {
+        missionIsActive(code).then((currentMission) => {
             db.collection("games").findOne({
                 code: code,
             }).then((result) => {
                 if (result == null) {
                     res.redirect("/");
                 } else {
-                    if (missions) {
-                        if (missions.activeUsers && missions.activeUsers.includes(username)) {
+                    if (currentMission) {
+                        if (currentMission.activeUsers && currentMission.activeUsers.includes(username)) {
                             res.render("main", {
                                 missions: missions,
                                 state: "showOnMission",
-                                users: res.users
+                                users: result.users
                             })
                         } else {
                             res.render("main", {
@@ -153,7 +153,7 @@ function loadMain(req, res) {
                         }
                     } else {
                         getNextMissionCount(code).then((missionSize) => res.render("main", {
-                            missions: [],
+                            missions: missions,
                             state: "showMission",
                             missionSize: missionSize.numOfUsers,
                             users: result.users
@@ -230,7 +230,7 @@ function vote(req, res) {
             $pull: {
                 "activeUsers": username
             }
-        }).then(result => {
+        }).then(() => {
             checkForInactiveMissions(code).then(() => res.redirect('/main'));
         });
     });
@@ -238,7 +238,7 @@ function vote(req, res) {
 }
 
 function checkForInactiveMissions(code) {
-    return mongoController.connectToDb().then(db => {
+    return new Promise((response, reject) => mongoController.connectToDb().then(db => {
         db.collection("missions").updateMany({
             code: code,
             active: "true",
@@ -250,12 +250,8 @@ function checkForInactiveMissions(code) {
             $set: {
                 active: "false"
             }
-        }, callback);
-    });
-}
-
-function getAllMissions() {
-
+        }).then(response());
+    }));
 }
 
 
