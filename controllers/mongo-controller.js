@@ -5,7 +5,10 @@ var MongoClient = mongodb.MongoClient;
 function connectToDb() {
   const url = "mongodb://localhost:27017";
   const dbName = "avalon";
-  const connection = MongoClient.connect(url);
+  const connection = MongoClient.connect(url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  });
 
   return connection.then(function (client) {
     console.log("Connected successfully to server");
