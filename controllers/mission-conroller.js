@@ -115,8 +115,8 @@ function missionIsActive(code) {
         collection.findOne({
             code: code,
             active: "true"
-        }).then((result) => resolve(result));
-    })).catch(err => reject(err))
+        }).then((result) => resolve(result)).catch(err => reject(err));
+    }));
 }
 
 function loadMain(req, res) {
@@ -266,8 +266,8 @@ function checkForInactiveMissions(code) {
             $set: {
                 active: "false"
             }
-        });
-    })).then(response()).catch(err => reject(err));
+        }).then(response()).catch(err => reject(err));
+    }));
 }
 
 
