@@ -7,12 +7,12 @@ block content
     .container.container-small
         each mission in missions
             if(mission.result=="pass")
-                span(style="color:green;font-size:10em" onclick="(alert('pass'))") &#10004;
+                span(style="color:green;font-size:10em" onclick="(alert('pass\\n"+mission.users+"'))") &#10004;
             else
                 if(mission.result==1)
                     span(style="color:red;font-size:10em" onclick="(alert('"+mission.result+" fail\\n"+mission.users+"'))") &#10006;
                 else
-                    span(style="color:red;font-size:10em" onclick="(alert('"+mission.result+" fails'))") &#10006;
+                    span(style="color:red;font-size:10em" onclick="(alert('"+mission.result+" fails\\n"+mission.users+"'))") &#10006;
         if state=="showMission"    
             .d-flex.justify-content-center
                 h2#error.text-danger Please put the correct number of people on this mission
@@ -42,3 +42,4 @@ block content
 
     script(type="text/javascript").
         var state = "#{state}";
+        var numOfPeopleOnMission = "#{missionSize}";

@@ -1,4 +1,5 @@
 window.onload = function () {
+    $("#error").hide();
     console.log(state);
     $('a').each(function () {
         $(this).click(function () {
@@ -20,7 +21,7 @@ window.onload = function () {
             suggestedUsers.users.push($(value).text());
         });
         $("a.btn-primary").removeClass("btn-primary").addClass("btn-secondary");
-        if (suggestedUsers.users.length != 0) {
+        if (suggestedUsers.users.length == numOfPeopleOnMission && suggestedUsers.users.length != 0) {
             $.ajax({
                 method: "POST",
                 url: "/main/new_mission",
@@ -30,6 +31,8 @@ window.onload = function () {
                 }
             });
             $('body').hide();
+        } else {
+            $("#error").show();
         }
     });
 };

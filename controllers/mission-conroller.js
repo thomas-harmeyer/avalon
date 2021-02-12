@@ -27,6 +27,8 @@ const missionPersonCount = [{
         numOfFails: [1, 1, 1, 2, 1]
     }
 ];
+const goodRoles = ["Good Knight", "Merlin", "Percival"];
+
 
 function createMission(req, res) {
     // get creds and verify them
@@ -90,8 +92,8 @@ function getNextMissionCount(code) {
                 if (numOfPlayers - 5 < 0 || missionNumber < 0) {
                     console.log("out of bounds");
                     resolve({
-                        numOfUsers: 0,
-                        numOfFails: 0
+                        numOfUsers: 1,
+                        numOfFails: 1
                     });
                 } else {
                     let numOfUsers = missionPersonCount[numOfPlayers - 5].numOfPlayers[missionNumber];
@@ -162,12 +164,33 @@ function loadMain(req, res) {
                             })
                         }
                     } else {
-                        getNextMissionCount(code).then((missionSize) => res.render("main", {
-                            missions: missions,
-                            state: "showMission",
-                            missionSize: missionSize.numOfUsers,
-                            users: result.users
-                        }));
+                        getNextMissionCount(code).then((missionSize) => {
+                            let passes = 0;
+                            let fails;
+                            missions.forEach(mission => passes += mission.result == 'pass' ? 1 : 0);
+                            fails = missions.length - passes;
+                            if (passes < 3 && fails < 3) {
+                                res.render("main", {
+                                    missions: missions,
+                                    state: "showMission",
+                                    missionSize: missionSize.numOfUsers,
+                                    users: result.users
+                                });
+                            } else {
+                                let isWin = passes > 2;
+                                let isGood;
+                                result.users.forEach(user => {
+                                    if (user.username == username) {
+                                        isGood = goodRoles.includes(user.role);
+                                    }
+                                });
+                                if ((isWin && isGood) || (!isWin && !isGood)) {
+                                    res.redirect("/finish/win");
+                                } else {
+                                    res.redirect("/finish/lose");
+                                }
+                            }
+                        });
                     }
                 }
             });
