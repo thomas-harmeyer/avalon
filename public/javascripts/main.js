@@ -1,6 +1,11 @@
 function setTimer() {
     let relativeTime = new Date(endTime - new Date().getTime());
-    $("#timer").html(relativeTime.getMinutes() + ":" + relativeTime.getSeconds());
+    let mins = relativeTime.getMinutes();
+    let secs = relativeTime.getSeconds();
+    if (secs.toString().length < 2) {
+        secs = "0" + secs;
+    }
+    $("#timer").html(mins + ":" + secs);
 }
 window.onload = function () {
     $("#error").hide();
