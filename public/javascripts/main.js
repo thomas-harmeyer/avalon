@@ -1,11 +1,16 @@
 function setTimer() {
-    let relativeTime = new Date(endTime - new Date().getTime());
-    let mins = relativeTime.getMinutes();
-    let secs = relativeTime.getSeconds();
-    if (secs.toString().length < 2) {
-        secs = "0" + secs;
+    const currentDate = new Date();
+    if (endTime > currentDate) {
+        let relativeTime = new Date(endTime - currentDate.getTime());
+        let mins = relativeTime.getMinutes();
+        let secs = relativeTime.getSeconds();
+        if (secs.toString().length < 2) {
+            secs = "0" + secs;
+        }
+        $("#timer").html(mins + ":" + secs);
+    } else {
+        $("#timer").html("Game Is Over!");
     }
-    $("#timer").html(mins + ":" + secs);
 }
 window.onload = function () {
     $("#error").hide();
