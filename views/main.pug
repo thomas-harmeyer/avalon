@@ -5,6 +5,8 @@ block scripts
 
 block content
     .container.container-small
+        .d-flex.justify-content-center
+            h1#timer
         each mission in missions
             if(mission.result=="pass")
                 span(style="color:green;font-size:10em" onclick="(alert('pass\\n"+mission.users+"'))") &#10004;
@@ -43,3 +45,4 @@ block content
     script(type="text/javascript").
         var state = "#{state}";
         var numOfPeopleOnMission = "#{missionSize}";
+        var endTime = "#{endTime}";

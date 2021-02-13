@@ -155,12 +155,14 @@ function loadMain(req, res) {
                             res.render("main", {
                                 missions: missions,
                                 state: "showOnMission",
-                                users: result.users
+                                users: result.users,
+                                endTime: result.endTime
                             })
                         } else {
                             res.render("main", {
                                 missions: missions,
-                                state: "showWait"
+                                state: "showWait",
+                                endTime: result.endTime
                             })
                         }
                     } else {
@@ -174,7 +176,8 @@ function loadMain(req, res) {
                                     missions: missions,
                                     state: "showMission",
                                     missionSize: missionSize.numOfUsers,
-                                    users: result.users
+                                    users: result.users,
+                                    endTime: result.endTime
                                 });
                             } else {
                                 let isWin = passes > 2;

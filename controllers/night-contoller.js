@@ -44,6 +44,7 @@ function assignRoles(req, res) {
     const users = result.users;
     let bulkUpdate = [];
     let roles = getRoles(users.length);
+    result.length = 25;
 
     // make the req used to update all users
     users.forEach((value, key) => {
@@ -57,7 +58,8 @@ function assignRoles(req, res) {
           update: {
             $set: {
               "users.$.role": roles.pop(),
-              started: "true"
+              started: "true",
+              endTime: new Date().getTime() + timeController.min(result.length)
             },
           },
         },

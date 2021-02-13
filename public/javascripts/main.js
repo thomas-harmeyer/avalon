@@ -1,6 +1,12 @@
+function setTimer() {
+    let relativeTime = new Date(endTime - new Date().getTime());
+    $("#timer").html(relativeTime.getMinutes() + ":" + relativeTime.getSeconds());
+}
 window.onload = function () {
     $("#error").hide();
     console.log(state);
+    setTimer();
+    setInterval(setTimer, 1000);
     $('a').each(function () {
         $(this).click(function () {
             if ($(this).hasClass("btn-secondary")) {
@@ -12,7 +18,6 @@ window.onload = function () {
             }
         });
     })
-
     $("#submit").click(() => {
         let suggestedUsers = {
             "users": []
@@ -35,20 +40,20 @@ window.onload = function () {
             $("#error").show();
         }
     });
-};
-setInterval(() => $.ajax({
-        method: "GET",
-        url: "/main/state",
-        error: function (xhr, status, err) {
-            console.log(xhr);
-            console.log(status);
-            console.log(err);
-        },
-        success: function (result) {
-            if (result != state) {
-                location.reload();
+    setInterval(() => $.ajax({
+            method: "GET",
+            url: "/main/state",
+            error: function (xhr, status, err) {
+                console.log(xhr);
+                console.log(status);
+                console.log(err);
+            },
+            success: function (result) {
+                if (result != state) {
+                    location.reload();
+                }
             }
         }
-    }
 
-), 3000);
+    ), 3000);
+};
