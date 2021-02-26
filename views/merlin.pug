@@ -1,0 +1,11 @@
+extends layout
+
+block content
+    .container-fluid
+        .row.col.justify-content-center
+            h1 Who is Merlin?
+            for user in users
+                .d-flex.justify-content-center
+                    a.btn.btn-secondary #{user.username}
+        .row.col.justify-content-center
+            a.btn.btn-primary(href="/") Final Answer
