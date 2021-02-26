@@ -124,7 +124,7 @@ function getNumberOfUsersInLobby(req, res) {
   }
   mongoController.connectToDb().then((db) => db.collection("games").findOne({
     code: code,
-  }).then((result) => res.send(result.users.length))).catch((err) => verifyController.onMongoDbException(err, res));
+  }).then((result) => res.send(result.users.length.toString()))).catch((err) => verifyController.onMongoDbException(err, res));
 }
 
 module.exports = {
