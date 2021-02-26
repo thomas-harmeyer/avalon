@@ -35,6 +35,7 @@ function createMission(req, res) {
     const username = req.cookies.username;
     const code = req.cookies.code;
     if (!verifyController.verifyCredentials(username, code)) {
+        res.redirect("/");
         return;
     }
 

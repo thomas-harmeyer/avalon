@@ -9,6 +9,9 @@ var missionController = require("../controllers/mission-controller");
 
 var finishController = require("../controllers/finish-controller");
 
+var merlinController = require("../controllers/merlin-controller");
+
+
 router.get("/", lobbyController.loadLanding);
 router.post("/create_code", lobbyController.createLobby);
 router.post("/", lobbyController.joinLobby);
@@ -26,5 +29,7 @@ router.post("/main/new_mission", missionController.createMission);
 router.post("/vote", missionController.vote);
 router.get("/finish/win", finishController.loadWin);
 router.get("/finish/lose", finishController.loadLose);
+router.get("/merlin", merlinController.loadMerlin);
+router.post("/merlin/guess", merlinController.guessMerlin);
 
 module.exports = router;

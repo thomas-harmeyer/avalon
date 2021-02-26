@@ -1,11 +1,21 @@
 extends layout
 
+block scripts
+    script(src='/javascripts/merlin.js')
+
 block content
     .container-fluid
         .row.col.justify-content-center
+        h1#err Please select a person to be Merlin
+        if(assassin=="true")
             h1 Who is Merlin?
-            for user in users
-                .d-flex.justify-content-center
-                    a.btn.btn-secondary #{user.username}
-        .row.col.justify-content-center
-            a.btn.btn-primary(href="/") Final Answer
+            .row.justify-content-center
+                for user in users
+                    .d-flex.justify-content-center
+                        .col
+                            a.btn.btn-secondary #{user.username}
+            .row.col.justify-content-center
+                button#submit.btn.btn-primary(onclick="guessMerlin()") Final Answer
+        else
+            h1 The bad guys are guessing Merlin right now.
+

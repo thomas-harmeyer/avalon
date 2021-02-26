@@ -27,6 +27,7 @@ function createLobby(req, res) {
     Math.floor(Math.random() * Math.floor(10)).toString() +
     Math.floor(Math.random() * Math.floor(10)).toString();
   if (!verifyController.verifyCredentials(username, code)) {
+    res.redirect("/");
     return;
   }
   // create a new empty game with given code and last update now
@@ -47,6 +48,7 @@ function joinLobby(req, res) {
   let username = req.body.username;
   let code = req.body.code;
   if (!verifyController.verifyCredentials(username, code)) {
+    res.redirect("/");
     return;
   }
   // add user to game with given O.P.E.
@@ -104,6 +106,7 @@ function loadLobby(req, res) {
   let username = req.cookies.username;
   let code = req.cookies.code;
   if (!verifyController.verifyCredentials(username, code)) {
+    res.redirect("/");
     return;
   }
 
@@ -120,6 +123,7 @@ function getNumberOfUsersInLobby(req, res) {
   let username = req.cookies.username;
   let code = req.cookies.code;
   if (!verifyController.verifyCredentials(username, code)) {
+    res.redirect("/");
     return;
   }
   mongoController.connectToDb().then((db) => db.collection("games").findOne({

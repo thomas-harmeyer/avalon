@@ -9,6 +9,7 @@ function hasStarted(req, res) {
   const username = req.cookies.username;
   const code = req.cookies.code;
   if (!verifyController.verifyCredentials(username, code)) {
+    res.redirect("/");
     return;
   }
 
@@ -27,6 +28,7 @@ function assignRoles(req, res) {
   const username = req.cookies.username;
   const code = req.cookies.code;
   if (!verifyController.verifyCredentials(username, code)) {
+    res.redirect("/");
     return;
   }
 
@@ -77,6 +79,7 @@ function loadNight(req, res) {
   const username = req.cookies.username;
   const code = req.cookies.code;
   if (!verifyController.verifyCredentials(username, code)) {
+    res.redirect("/");
     return;
   }
 
