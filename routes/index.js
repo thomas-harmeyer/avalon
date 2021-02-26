@@ -3,9 +3,9 @@ var router = express.Router();
 
 var lobbyController = require("../controllers/lobby-controller");
 
-var nightController = require("../controllers/night-contoller");
+var nightController = require("../controllers/night-controller");
 
-var missionController = require("../controllers/mission-conroller");
+var missionController = require("../controllers/mission-controller");
 
 var finishController = require("../controllers/finish-controller");
 
@@ -14,6 +14,7 @@ router.post("/create_code", lobbyController.createLobby);
 router.post("/", lobbyController.joinLobby);
 router.post("/remove_user", lobbyController.removeUser);
 router.get("/games", lobbyController.loadLobby);
+router.get("/games/refresh", lobbyController.getNumberOfUsersInLobby);
 router.get("/night/started", nightController.hasStarted)
 router.get("/night", nightController.loadNight);
 router.post("/night", nightController.assignRoles);

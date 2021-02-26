@@ -112,7 +112,19 @@ function loadLobby(req, res) {
     code: code,
   }).then((result) => res.render("games", {
     games: result,
+    numOfUsers: result.users.length
   }))).catch((err) => verifyController.onMongoDbException(err, res));
+}
+
+function getNumberOfUsersInLobby(req, res) {
+  let username = req.cookies.username;
+  let code = req.cookies.code;
+  if (!verifyController.verifyCredentials(username, code)) {
+    return;
+  }
+  mongoController.connectToDb().then((db) => db.collection("games").findOne({
+    code: code,
+  }).then((result) => res.send(result.users.length))).catch((err) => verifyController.onMongoDbException(err, res));
 }
 
 module.exports = {
@@ -121,4 +133,5 @@ module.exports = {
   joinLobby,
   removeUser,
   loadLobby,
+  getNumberOfUsersInLobby
 };

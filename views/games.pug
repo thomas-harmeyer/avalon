@@ -1,5 +1,8 @@
 extends layout
 
+block scripts
+    script(src='/javascripts/lobby.js')
+
 block content
     .container-fluid
         .row.col.justify-content-center
@@ -18,4 +21,4 @@ block content
                 button.btn.btn-primary(type="submit") Start Game
 
         script.
-            $.ajax({method: "GET",url: "/night/started",success: function (result) {if(result){location.href = '/night';}}});
+            var numOfUsers = "#{numOfUsers}";
