@@ -2,10 +2,12 @@ const mongoController = require("./mongo-controller");
 const timeController = require("./time-controller");
 const timeInterval = timeController.min(5);
 const cutOffInterval = timeController.min(60);
-setInterval(function () {
+removeOldGames();
+setInterval(removeOldGames, timeInterval);
+
+function removeOldGames() {
     console.log("I am doing my 5 minutes check");
-    var removedLobbies = [];
-    mongoController.connectToDb(function (db) {
+    mongoController.connectToDb().then((db) => {
         let collection = db.collection("games");
         collection.deleteMany({
             "updated": {
@@ -19,7 +21,7 @@ setInterval(function () {
             }
         });
     });
-    mongoController.connectToDb(function (db) {
+    mongoController.connectToDb().then((db) => {
         let collection = db.collection("missions");
         collection.deleteMany({
             "updated": {
@@ -33,4 +35,4 @@ setInterval(function () {
             }
         });
     });
-}, timeInterval);
+}

@@ -1,17 +1,19 @@
-var express = require("express");
-var router = express.Router();
+const express = require("express");
+const router = express.Router();
 
-var lobbyController = require("../controllers/lobby-controller");
+const lobbyController = require("../controllers/lobby-controller");
 
-var nightController = require("../controllers/night-controller");
+const nightController = require("../controllers/night-controller");
 
-var missionController = require("../controllers/mission-controller");
+const missionController = require("../controllers/mission-controller");
 
-var finishController = require("../controllers/finish-controller");
+const finishController = require("../controllers/finish-controller");
 
-var merlinController = require("../controllers/merlin-controller");
+const merlinController = require("../controllers/merlin-controller");
 
+const loginController = require("../controllers/login-controller");
 
+router.get("/login", loginController);
 router.get("/", lobbyController.loadLanding);
 router.post("/create_code", lobbyController.createLobby);
 router.post("/", lobbyController.joinLobby);
@@ -30,6 +32,7 @@ router.post("/vote", missionController.vote);
 router.get("/finish/win", finishController.loadWin);
 router.get("/finish/lose", finishController.loadLose);
 router.get("/merlin", merlinController.loadMerlin);
+router.get("/finish", merlinController.loadMerlin);
 router.post("/merlin/guess", merlinController.guessMerlin);
 
 module.exports = router;

@@ -188,11 +188,7 @@ function loadMain(req, res) {
                                         isGood = goodRoles.includes(user.role);
                                     }
                                 });
-                                if ((isWin && isGood) || (!isWin && !isGood)) {
-                                    res.redirect("/finish/win");
-                                } else {
-                                    res.redirect("/finish/lose");
-                                }
+                                res.redirect("/merlin");
                             }
                         });
                     }
