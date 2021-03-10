@@ -13,7 +13,10 @@ const merlinController = require("../controllers/merlin-controller");
 
 const loginController = require("../controllers/login-controller");
 
-router.get("/login", loginController);
+router.get("/login", loginController.loadLogin);
+router.post("/login", loginController.login);
+router.get("/register", loginController.loadRegister);
+router.post("/register", loginController.register);
 router.get("/", lobbyController.loadLanding);
 router.post("/create_code", lobbyController.createLobby);
 router.post("/", lobbyController.joinLobby);

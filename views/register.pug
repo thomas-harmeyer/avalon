@@ -1,0 +1,27 @@
+extends layout
+
+block scripts
+    script(src='/javascripts/register.js')
+
+block content
+    .container-fluid
+        .row.col.justify-content-center
+        if(typeof(error) !== 'undefined')
+            h1#err.text-danger #{error}
+        .d-flex.justify-content-center
+            h1 Login
+        form(name="add_user" method="post" action="/register")
+            .d-flex.justify-content-center
+                .form-group
+                    input.form-control(id="username" name="username" type="text" placeholder="Username")
+            .d-flex.justify-content-center
+                .form-group
+                    .input-group
+                        input#password.form-control(name="password" type="password" placeholder="Password")
+            .d-flex.justify-content-center
+                .form-group
+                    .input-group
+                        input#confirmPassword.form-control( type="password" placeholder="Confirm Password")        
+            .d-flex.justify-content-center
+                .form-group
+                    button#submit.btn.btn-primary(type="submit") Register

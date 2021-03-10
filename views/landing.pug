@@ -1,17 +1,17 @@
 extends layout
 
 block content
-  if typeof(err) !== 'undefined'
+  if(typeof(err) !== 'undefined')
     p= err
   .container.container-small
     .d-flex.justify-content-center
       h1 #{title}
     .d-flex.justify-content-center
-      p Welcome to the game of #{title}
+      p Welcome to the game of #{title} #{username}
     form(name="add_user" method="post" action="/")
       .d-flex.justify-content-center
         .form-group
-          input.form-control(id="username" name="username" type="text" placeholder="Username")
+          input#username.form-control( name="username" type="text" placeholder="Username")
       .d-flex.justify-content-center
         .form-group
           .input-group
@@ -25,3 +25,4 @@ block content
       .d-flex.justify-content-center
         .form-group
           button.btn.btn-primary(name="host" type="submit" onclick="$('#create').val($('#username').val())") Create Room
+    script.

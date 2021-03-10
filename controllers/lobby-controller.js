@@ -7,12 +7,14 @@ const title = "Avalon";
 function loadLanding(req, res) {
   // clear cookies
   res.clearCookie("code");
-  res.clearCookie("username");
-
+  //res.clearCookie("username");
+  let renderData = {};
+  renderData.title = title;
   // render landing page
-  res.render("landing", {
-    title: title,
-  });
+  if (req.cookies.username != undefined) {
+    renderData.username = req.cookies.username;
+  }
+  res.render("landing", renderData);
 }
 
 function createLobby(req, res) {
